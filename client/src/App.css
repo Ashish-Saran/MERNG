@@ -1,1 +1,12 @@
+.home {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 20px;
+}
 
+.posts-container {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid palevioletred;
+  border-radius: 5px;
+}
