@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import { useForm } from '../utils/Hooks';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/auth';
 
 function Login(props) {
 
+  const context = useContext(AuthContext);
   const [errors, setErrors] = useState({});
   const history = useNavigate();
   const { onChange, onSubmit, values } = useForm(loginUserCallbk, {
@@ -18,7 +20,9 @@ function Login(props) {
   // };
   
   const [loginUser, { loading }] = useMutation(LOGIN_USER, {
-    update(proxy, result) {
+    update(proxy, {data: {login: userData}}) {
+      console.log(userData);
+      context.login(userData)
       history('/');
     },
     onError(err) {

@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useQuery } from '@apollo/react-hooks';
-import gql from 'graphql-tag';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -12,10 +11,14 @@ import Stack from '@mui/material/Stack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import { AuthContext } from '../context/auth';
+import PostForm from '../components/PostForm';
+import { FETCH_POSTS_QUERY } from '../utils/GraphQL';
 
 
 function Home() {
 
+  const { user } = useContext(AuthContext);
   const { loading, data } = useQuery(FETCH_POSTS_QUERY);
 
   function likePost() {
@@ -36,6 +39,10 @@ function Home() {
   
 
   return <div className='home'>
+
+            {user && (
+              <PostForm/>
+            )}
             {loading ?
               <h3>Loading Posts...</h3> : (
                 data.getPosts && data.getPosts.map((post) => {
@@ -45,7 +52,11 @@ function Home() {
                         <p>{post.username}</p>
                         <p>{moment(post.createdAt).fromNow(true)}</p>
                         <p>{post.body}</p>
-                        <Button onClick={likePost}>Likes</Button> {post.likeCount}
+                        <Button onClick={likePost}> Likes</Button> {post.likeCount}
+                        <a href={`/posts/${post.id}`}>Comments</a>
+                        {user && user.username === post.username && (
+                          <Button onClick={()=> console.log('Delete post.')}>Delete</Button>
+                        )}
                       </div>
                     </div>
                 )
@@ -53,22 +64,6 @@ function Home() {
             )}
   </div>
 }
-
-const FETCH_POSTS_QUERY = gql`
-{
-  getPosts{
-    id body createdAt username likeCount
-    likes{
-      username
-    }
-    comments{
-      id username createdAt body
-    }
-  }
-}
-`
-
-
 
 export function BasicGrid() {
 
